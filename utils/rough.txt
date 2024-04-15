@@ -1,0 +1,68 @@
+### CPU Metrics:
+ `process_cpu_usage`, //
+ `system_cpu_count`, //
+ `system_cpu_usage`, //
+
+### Memory Metrics:
+- `jvm_buffer_count_buffers` // 
+- `jvm_buffer_memory_used_bytes` //
+- `jvm_buffer_total_capacity_bytes` // isse memory used niklegi
+- `jvm_gc_live_data_size_bytes` //
+- `jvm_gc_max_data_size_bytes` // isse memory used niklegi
+- `jvm_gc_memory_allocated_bytes_total` //
+- `jvm_gc_memory_promoted_bytes_total` //
+- `jvm_memory_committed_bytes` //
+- `jvm_memory_max_bytes` //
+- `jvm_memory_usage_after_gc_percent` // iske neeche waala ek saath ek graph me
+- `jvm_memory_used_bytes` //
+
+### Disk Metrics:
+- `disk_free_bytes` //
+- `disk_total_bytes` //
+
+### Task Executor Metrics:
+- `executor_active_threads` //
+- `executor_completed_tasks_total` //
+- `executor_pool_core_threads`//
+- `executor_pool_max_threads`//
+- `executor_pool_size_threads`//
+- `executor_queue_remaining_tasks` //
+- `executor_queued_tasks` //
+
+### HTTP Metrics:
+- `http_server_requests_seconds_count` //
+- `http_server_requests_seconds_max`//
+- `http_server_requests_seconds_sum`//
+
+### JVM Metrics:
+- `jvm_classes_loaded_classes`//
+- `jvm_classes_unloaded_classes_total`//
+- `jvm_gc_overhead_percent`
+- `jvm_gc_pause_seconds_count`
+- `jvm_gc_pause_seconds_max`
+- `jvm_gc_pause_seconds_sum`
+- `jvm_threads_daemon_threads`
+- `jvm_threads_live_threads` // iska aur iske neeche waale ka graph banana hai
+- `jvm_threads_peak_threads` // iske saaath
+- `jvm_threads_states_threads`
+
+### Process Metrics:
+- `process_files_max_files` //
+- `process_files_open_files`//
+- `process_start_time_seconds`//
+- `process_uptime_seconds`//
+
+### HTTP Server Metrics:
+- `promhttp_metric_handler_requests_in_flight` // iska bhi graph
+- `promhttp_metric_handler_requests_total` //iska bhi
+
+### System Metrics:
+- `system_load_average_1m` // iska graph banega
+
+### Web Server Metrics:
+- `tomcat_sessions_active_current_sessions` //
+- `tomcat_sessions_active_max_sessions`//
+- `tomcat_sessions_alive_max_seconds`//
+- `tomcat_sessions_created_sessions_total`//
+- `tomcat_sessions_expired_sessions_total`//
+- `tomcat_sessions_rejected_sessions_total`//
