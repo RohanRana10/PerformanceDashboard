@@ -1083,6 +1083,7 @@ export default function Dashboard() {
 
     const navigation = useNavigation();
     const [metrics, setMetrics] = useState({});
+    const [selections, setSelections] = useState([]);
 
     const extractMertics = () => {
         // console.log(typeof info.data.result);
@@ -1090,7 +1091,7 @@ export default function Dashboard() {
             metrics[metric.metric.__name__] = metric.value[1] ? metric.value[1] : 0;
             setMetrics({ ...metrics, [metric.metric.__name__]: metric.value[1] ? metric.value[1] : 0 });
         })
-        console.log("metrics");
+        console.log("metrics that will be fetched at regular intervals");
     }
 
     const handleReset = async () => {
@@ -1182,6 +1183,15 @@ export default function Dashboard() {
     useEffect(() => {
 
         extractMertics();
+
+        const getSelections = async () => {
+            let temp = await AsyncStorage.getItem('selections');
+            setSelections(temp);
+            // console.log("fetched saved selections", temp);
+            // console.log(typeof Number(parseFloat(metrics.system_cpu_usage).toFixed(1)));
+        }
+
+        getSelections();
         // const intervalOne = setInterval(() => {
         //     setCountOne(getRandomNumber(1, 100));
         // }, 2000);
@@ -1235,7 +1245,7 @@ export default function Dashboard() {
             paddingHorizontal: 10,
             paddingVertical: 20
         }}>
-            <StatusBar />
+            <StatusBar backgroundColor={'#151618'} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 <Text style={styles.heading}>Dashboard</Text>
                 <Menu>
@@ -1298,8 +1308,9 @@ export default function Dashboard() {
                                     )}
                             </AnimatedCircularProgress>
                         </View> */}
-                        <Meter count={countOne} heading={"System CPU Usage"} />
-                        <Meter count={countTwo} heading={"Process CPU Usage"} />
+
+                        {selections.includes('system_cpu_usage') && <Meter count={Number(parseFloat(metrics.system_cpu_usage).toFixed(1))} heading={"System CPU Usage"} />}
+                        {selections.includes('process_cpu_usage') && <Meter count={Number(parseFloat(metrics.process_cpu_usage).toFixed(1))} heading={"Process CPU Usage"} />}
 
                         {/* <View style={styles.meter}>
                             <Text style={styles.meterHeading}>Memory Usage</Text>
@@ -1326,23 +1337,23 @@ export default function Dashboard() {
                     </View>
 
                     <FlatMetrics
-                        name1={'System CPU count'} value1={metrics.system_cpu_count}
-                        name2={'Free Disk Bytes'} value2={metrics.disk_free_bytes}
-                        name3={'Total Disk Bytes'} value3={metrics.disk_total_bytes}
-                        name4={'JVM Buffer Count'} value4={metrics.jvm_buffer_count_buffers}
+                        name1={selections.includes('system_cpu_count') ? 'System CPU count' : undefined} value1={metrics.system_cpu_count}
+                        name2={selections.includes('disk_free_bytes') ? 'Free Disk Bytes' : undefined} value2={metrics.disk_free_bytes}
+                        name3={selections.includes('disk_total_bytes') ? 'Total Disk Bytes' : undefined} value3={metrics.disk_total_bytes}
+                        name4={selections.includes('jvm_buffer_count_buffers') ? 'JVM Buffer Count' : undefined} value4={metrics.jvm_buffer_count_buffers}
                     />
 
 
                     <View style={styles.metersContainer}>
-                        <Meter count={60} heading={"Buffer Memory Used"} />
-                        <Meter count={70} heading={"Live Data Size"} />
+                        {selections.includes('jvm_buffer_memory_used_bytes') && <Meter count={Number(parseFloat(metrics.jvm_buffer_memory_used_bytes).toFixed(1))} heading={"Buffer Memory Used"} />}
+                        {selections.includes('jvm_gc_live_data_size_bytes') && <Meter count={Number(parseFloat(parseFloat(metrics.jvm_gc_live_data_size_bytes) * 100 / parseFloat(metrics.jvm_gc_max_data_size_bytes)).toFixed(1))} heading={"Live Data Size"} />}
                     </View>
 
                     <FlatMetrics
-                        name1={'Memory Allocated'} value1={metrics.jvm_gc_memory_allocated_bytes_total}
-                        name2={'GC Memory Promoted bytes'} value2={metrics.jvm_gc_memory_promoted_bytes_total}
-                        name3={'Memory Bytes Committed'} value3={metrics.jvm_memory_committed_bytes}
-                        name4={'Memory Bytes Max'} value4={metrics.jvm_memory_max_bytes}
+                        name1={selections.includes('jvm_gc_memory_allocated_bytes_total') ? 'Memory Allocated' : undefined} value1={metrics.jvm_gc_memory_allocated_bytes_total}
+                        name2={selections.includes('jvm_gc_memory_promoted_bytes_total') ? 'GC Memory Promoted bytes' : undefined} value2={metrics.jvm_gc_memory_promoted_bytes_total}
+                        name3={selections.includes('jvm_memory_committed_bytes') ? 'Memory Bytes Committed' : undefined} value3={metrics.jvm_memory_committed_bytes}
+                        name4={selections.includes('jvm_memory_max_bytes') ? 'Memory Bytes Max' : undefined} value4={metrics.jvm_memory_max_bytes}
                     />
                     {/* <View style={{ marginBottom: 15 }}>
                         <LineChart
@@ -1357,6 +1368,20 @@ export default function Dashboard() {
                     </View> */}
 
                     <LineGraph data={temp} width={screenWidth} chartConfig={chartConfig} />
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+
+                        {selections.includes('http_server_requests_seconds_count') && <View style={{ alignItems: 'center', width: '45%' }}>
+                            <Text style={{ color: "white", marginBottom: -10, textAlign: 'center' }}>HTTP Server requests (per second)</Text>
+                            <Text style={{ color: "orange", fontWeight: 'bold', fontSize: 90 }}>{metrics.http_server_requests_seconds_count}</Text>
+                        </View>}
+
+                        {selections.includes('http_server_requests_seconds_max') && <View style={{ alignItems: 'center', width: '45%' }}>
+                            <Text style={{ color: "white", marginBottom: -10, textAlign: 'center' }}>Max. Time taken by Server Request</Text>
+                            <Text style={{ color: "orange", fontWeight: 'bold', fontSize: 90 }}>{metrics.http_server_requests_seconds_max}</Text>
+                        </View>}
+
+                    </View>
 
                     <View style={styles.metersContainer}>
                         {/* <View style={styles.meter}>
@@ -1381,8 +1406,9 @@ export default function Dashboard() {
                                     )}
                             </AnimatedCircularProgress>
                         </View> */}
-                        <Meter count={countFour} heading={"Disk Space Usage"} />
-                        <Meter count={countThree} heading={"Google Hits"} />
+                        {(selections.includes('disk_total_bytes') || selections.includes('disk_free_bytes')) && <Meter count={Number(((metrics.disk_total_bytes - metrics.disk_free_bytes) * 100 / metrics.disk_total_bytes).toFixed(1))} heading={"Disk Space Usage"} />}
+                        {/* <Meter count={countThree} heading={"Google Hits"} />  */}
+
                         {/* <View style={styles.meter}>
                             <Text style={styles.meterHeading}>Disk Space Usage</Text>
                             <AnimatedCircularProgress
@@ -1407,13 +1433,15 @@ export default function Dashboard() {
                         </View> */}
                     </View>
 
+
+
                     <FlatMetrics
-                        name1={'Active Executor Threads'} value1={metrics.executor_active_threads}
-                        name2={'Completed Executor Tasks'} value2={metrics.executor_completed_tasks_total}
-                        name3={'Queued Tasks'} value3={metrics.executor_queued_tasks}
-                        name4={'Remaining Tasks'} value4={metrics.executor_queue_remaining_tasks}
-                        name6={'Core Pool Threads'} value6={metrics.executor_pool_core_threads}
-                        name7={'Max. Pool Thread'} value7={metrics.executor_pool_max_threads}
+                        name1={selections.includes('executor_active_threads') ? 'Active Executor Threads' : undefined} value1={metrics.executor_active_threads}
+                        name2={selections.includes('executor_completed_tasks_total') ? 'Completed Executor Tasks' : undefined} value2={metrics.executor_completed_tasks_total}
+                        name3={selections.includes('executor_queued_tasks') ? 'Queued Tasks' : undefined} value3={metrics.executor_queued_tasks}
+                        name4={selections.includes('executor_queue_remaining_tasks') ? 'Remaining Tasks in Queue' : undefined} value4={metrics.executor_queue_remaining_tasks}
+                        name6={selections.includes('executor_pool_core_threads') ? 'Core Pool Threads' : undefined} value6={metrics.executor_pool_core_threads}
+                        name5={selections.includes('executor_pool_max_threads') ? 'Max. Pool Thread' : undefined} value5={metrics.executor_pool_max_threads}
                     />
 
                     {/* <FlatMetrics
@@ -1433,44 +1461,58 @@ export default function Dashboard() {
                             chartConfig={chartConfig}
                         />
                     </View> */}
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginBottom: 15 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap', marginBottom: 15 }}>
 
                         <View style={{ backgroundColor: 'green', width: '30%', height: 200, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Active Current Tomcat Sessions</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Active Current Tomcat Sessions</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_active_current_sessions}</Text>
                         </View>
                         <View style={{ backgroundColor: 'green', width: '30%', height: 100, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Max. Active Tomcat Sessions</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Max. Active Tomcat Sessions</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_active_max_sessions}</Text>
                         </View>
                         <View style={{ backgroundColor: 'green', width: '30%', height: 200, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Max. Seconds Tomcat Session Alive</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Max. Seconds Tomcat Session Alive</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_alive_max_seconds}</Text>
                         </View>
                         <View style={{ backgroundColor: 'green', width: '30%', height: 200, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Total Tomcat Sessions Created</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Total Tomcat Sessions Created</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_created_sessions_total}</Text>
                         </View>
                         <View style={{ backgroundColor: 'green', width: '30%', height: 100, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Total Expired Tomcat Sessions</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Total Expired Tomcat Sessions</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_expired_sessions_total}</Text>
                         </View>
                         <View style={{ backgroundColor: 'green', width: '30%', height: 200, borderRadius: 10, padding: 8, margin: 6, justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ color: 'white', fontWeight: '500', alignSelf: 'center', marginBottom: 10 }}>Total Expired Tomcat Sessions</Text>
+                            <Text style={{ color: 'white', fontWeight: '500', textAlign: 'center', marginBottom: 10 }}>Total Expired Tomcat Sessions</Text>
                             <Text style={{ fontSize: 20, color: 'black' }}>{metrics.tomcat_sessions_rejected_sessions_total}</Text>
                         </View>
 
                     </View>
-                    
+
                     <LineGraph data={dataTwo} width={screenWidth} chartConfig={chartConfig} />
 
                     <FlatMetrics
-                        name1={'Server Request Count '} value1={metrics.http_server_requests_seconds_count}
+                        name1={'Total GC Pauses (in seconds)'} value1={metrics.http_server_requests_seconds_count}
                         name3={'Memory Bytes Committed'} value3={metrics.http_server_requests_seconds_sum}
-                        name4={'Loaded JVM Classes'} value4={metrics.jvm_classes_loaded_classes}
+                        name4={'Max. GC Pause Dutation'} value4={metrics.jvm_classes_loaded_classes}
                         name2={'Total Unloaded JVM Classes'} value2={metrics.jvm_classes_unloaded_classes_total}
 
                     />
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+
+                        {selections.includes('jvm_gc_pause_seconds_count') && <View style={{ alignItems: 'center', width: '45%' }}>
+                            <Text style={{ color: "white", marginBottom: -10, textAlign: 'center' }}>Total GC Pauses (in seconds)</Text>
+                            <Text style={{ color: "orange", fontWeight: 'bold', fontSize: 90 }}>{metrics.jvm_gc_pause_seconds_count > 99 ? '99+' : metrics.jvm_gc_pause_seconds_count}</Text>
+                        </View>}
+
+                        {selections.includes('jvm_gc_pause_seconds_max') && <View style={{ alignItems: 'center', width: '45%' }}>
+                            <Text style={{ color: "white", marginBottom: -10, textAlign: 'center' }}>Max. Time taken by GC Pause (seconds)</Text>
+                            <Text style={{ color: "orange", fontWeight: 'bold', fontSize: 90 }}>{metrics.jvm_gc_pause_seconds_max > 99 ? '99+' : metrics.jvm_gc_pause_seconds_max}</Text>
+                        </View>}
+
+                    </View>
                 </View>
 
 

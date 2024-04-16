@@ -123,7 +123,7 @@ export default function Setup() {
             paddingHorizontal: 10,
             paddingVertical: 20
         }}>
-            <StatusBar />
+            <StatusBar backgroundColor={'#151618'}/>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 {editMode ? (<Text style={styles.heading}>Edit Preferences</Text>) : (<Text style={styles.heading}>Dashboard Setup</Text>)}
                 <TouchableOpacity onPress={handleMerticsSubmit} style={{ justifyContent: 'center', width: 80, alignItems: 'center', height: 40, borderRadius: 10, borderColor: 'orange', borderWidth: 2 }}>
@@ -257,6 +257,16 @@ export default function Setup() {
                         <View style={styles.checkBoxContainer}>
                             <CheckBox
                                 disabled={false}
+                                value={selections.includes('jvm_gc_memory_promoted_bytes_total')}
+                                color={'orange'}
+                                onValueChange={(value) => handleValueChange(value, 'jvm_gc_memory_promoted_bytes_total')}
+                            />
+                            <Text style={{ color: selections.includes('jvm_gc_memory_promoted_bytes_total') ? 'orange' : 'white', marginHorizontal: 15 }}>JVM GC Memory Promoted (Bytes)</Text>
+                        </View>
+
+                        <View style={styles.checkBoxContainer}>
+                            <CheckBox
+                                disabled={false}
                                 value={selections.includes('jvm_memory_committed_bytes')}
                                 color={'orange'}
                                 onValueChange={(value) => handleValueChange(value, 'jvm_memory_committed_bytes')}
@@ -339,7 +349,7 @@ export default function Setup() {
                             <Text style={{ color: selections.includes('executor_pool_max_threads') ? 'orange' : 'white', marginHorizontal: 15 }}>Max Pool Threads</Text>
                         </View>
 
-                        <View style={styles.checkBoxContainer}>
+                        {/* <View style={styles.checkBoxContainer}>
                             <CheckBox
                                 disabled={false}
                                 value={selections.includes('executor_pool_size_threads')}
@@ -347,7 +357,7 @@ export default function Setup() {
                                 onValueChange={(value) => handleValueChange(value, 'executor_pool_size_threads')}
                             />
                             <Text style={{ color: selections.includes('executor_pool_size_threads') ? 'orange' : 'white', marginHorizontal: 15 }}>Size Pool Threads</Text>
-                        </View>
+                        </View> */}
 
                         <View style={styles.checkBoxContainer}>
                             <CheckBox
@@ -695,7 +705,8 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     metricContainer: {
-        marginBottom: 15
+        marginBottom: 15,
+        
     },
     metricHeadingContainer: {
         flexDirection: 'row',
@@ -709,6 +720,7 @@ const styles = StyleSheet.create({
     },
     checkBoxContainer: {
         flexDirection: 'row',
+        marginLeft: 15,
         marginTop: 18
     }
 })

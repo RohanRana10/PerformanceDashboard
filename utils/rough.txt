@@ -6,7 +6,7 @@
 ### Memory Metrics:
 - `jvm_buffer_count_buffers` // 
 - `jvm_buffer_memory_used_bytes` //
-- `jvm_buffer_total_capacity_bytes` // isse memory used niklegi
+- `jvm_buffer_total_capacity_bytes` // isse memory used niklegi ======> incomplete
 - `jvm_gc_live_data_size_bytes` //
 - `jvm_gc_max_data_size_bytes` // isse memory used niklegi
 - `jvm_gc_memory_allocated_bytes_total` //
